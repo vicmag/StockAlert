@@ -27,8 +27,14 @@ namespace StoreManager.Domain.Services
 
         public void CheckLowStock(int productId)
         {
+            if (productId <= 0)
+                throw new ArgumentException("El ID del producto debe ser mayor que cero.", nameof(productId));
+
             var product = _productRepository.GetById(productId);
-            if (product != null && product.Stock <= product.MinimumStockLevel)
+            if (product == null)
+                throw new InvalidOperationException($"No se encontró el producto con ID {productId}.");
+
+            if (product.Stock <= product.MinimumStockLevel)
             {
                 _productRepository.SendAlert(product);
             }
