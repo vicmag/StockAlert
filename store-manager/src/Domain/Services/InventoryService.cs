@@ -14,7 +14,12 @@ namespace StoreManager.Domain.Services
 
         public void SetMinimumStockLevel(int productId, int minimumStockLevel)
         {
-            // No implementamos la lógica aún (Fase Roja)
+            var product = _productRepository.GetById(productId);
+            if (product != null)
+            {
+                product.MinimumStockLevel = minimumStockLevel;
+                _productRepository.Update(product);
+            } 
         }
     }
 }
