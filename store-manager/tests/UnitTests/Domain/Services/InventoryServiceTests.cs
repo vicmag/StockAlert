@@ -1,3 +1,4 @@
+using Moq;
 using NUnit.Framework;
 using StoreManager.Domain.Entities;
 using StoreManager.Domain.Interfaces;
@@ -8,14 +9,17 @@ namespace StoreManager.Tests.UnitTests.Domain.Services
     [TestFixture]
     public class InventoryServiceTests
     {
+        private Mock<IProductRepository> _mockProductRepository;
         private IInventoryService _inventoryService;
-        private IProductRepository _productRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _productRepository = new MockProductRepository();
-            _inventoryService = new InventoryService(_productRepository);
+            // Crear un mock de IProductRepository
+            _mockProductRepository = new Mock<IProductRepository>();
+
+            // Inicializar el servicio con el mock del repositorio
+            _inventoryService = new InventoryService(_mockProductRepository.Object);
         }
 
         [Test]
@@ -23,14 +27,16 @@ namespace StoreManager.Tests.UnitTests.Domain.Services
         {
             // Arrange
             var product = new Product { Id = 1, Name = "Camiseta Azul", Stock = 20, MinimumStockLevel = 10 };
-            _productRepository.Add(product);
+
+            // Configurar el mock para devolver el producto cuando se llame a GetById
+            _mockProductRepository.Setup(repo => repo.GetById(1)).Returns(product);
 
             // Act
             _inventoryService.SetMinimumStockLevel(product.Id, 15);
 
             // Assert
-            var updatedProduct = _productRepository.GetById(product.Id);
-            Assert.That(updatedProduct.MinimumStockLevel, Is.EqualTo(15));
+            // Verificar que el método Update se llamó con el producto actualizado
+            _mockProductRepository.Verify(repo => repo.Update(It.Is<Product>(p => p.MinimumStockLevel == 15)), Times.Once);
         }
     }
 }
