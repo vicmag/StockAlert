@@ -27,7 +27,11 @@ namespace StoreManager.Domain.Services
 
         public void CheckLowStock(int productId)
         {
-            // No implementamos la lógica aún (Fase Roja)
+            var product = _productRepository.GetById(productId);
+            if (product != null && product.Stock <= product.MinimumStockLevel)
+            {
+                _productRepository.SendAlert(product);
+            }
         }
     }
 }
