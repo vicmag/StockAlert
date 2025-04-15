@@ -11,8 +11,14 @@ namespace Store.Domain.Services
         
         public void IncreaseStock(string productId, int increment)
         {
-            throw new System.NotImplementedException();
+            // 1. Obtener el producto
+            var product = _productRepository.GetById(productId);
+            
+            // 2. Incrementar el stock
+            product.Stock += increment;
+            
+            // 3. Guardar los cambios
+            _productRepository.Save(product);
         }
     }
 }
-throw new System.NotImplementedException();
