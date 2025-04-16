@@ -1,3 +1,5 @@
+using Store.Domain.Models;
+
 namespace Store.Domain.Services
 {
     public class ProductService
@@ -11,13 +13,23 @@ namespace Store.Domain.Services
         
         public void IncreaseStock(string productId, int increment)
         {
-            // 1. Obtener el producto
-            var product = _productRepository.GetById(productId);
-            
-            // 2. Incrementar el stock
+            var product = GetProduct(productId);
+            UpdateStock(product, increment);
+            SaveChanges(product);
+        }
+
+        private Product GetProduct(string productId)
+        {
+            return _productRepository.GetById(productId);
+        }
+
+        private void UpdateStock(Product product, int increment)
+        {
             product.Stock += increment;
-            
-            // 3. Guardar los cambios
+        }
+
+        private void SaveChanges(Product product)
+        {
             _productRepository.Save(product);
         }
     }

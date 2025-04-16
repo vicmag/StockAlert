@@ -18,6 +18,8 @@ public class ProductServiceTests
         var testProduct = new Product(productId, "Camiseta", initialStock);
         productRepoMock.Setup(repo => repo.GetById(productId))
                       .Returns(testProduct);
+        productRepoMock.Setup(repo => repo.Save(testProduct))
+                      .Verifiable();
                       
         var productService = new ProductService(productRepoMock.Object);
         
