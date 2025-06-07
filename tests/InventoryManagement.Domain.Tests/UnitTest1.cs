@@ -1,4 +1,4 @@
-﻿namespace Store.Domain.Tests;
+﻿namespace InventoryManagement.Domain.Tests;
 
 public class UnitTest1
 {
