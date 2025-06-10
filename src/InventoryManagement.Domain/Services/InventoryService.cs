@@ -13,8 +13,9 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            //No hay implementación. Fase Roja
-            throw new NotImplementedException("Sin implementación. Fase Roja.");
+            var product = _productRepository.GetByName(productName);
+            product.Stock += incrementAmount;
+            _productRepository.Update(product);
         }
 
     }
