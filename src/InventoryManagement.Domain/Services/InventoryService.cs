@@ -1,4 +1,5 @@
 using InventoryManagement.Domain.Interfaces;
+using InventoryManagement.Domain.Models;
 
 namespace InventoryManagement.Domain.Services
 {
@@ -13,8 +14,23 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            var product = _productRepository.GetByName(productName);
+            var product = GetProduct(productName);
+            IncreaseStock(product, incrementAmount);
+            SaveProduct(product);
+        }
+    
+        private Product GetProduct(string productName)
+        {
+            return _productRepository.GetByName(productName);
+        }
+
+        private void IncreaseStock(Product product, int incrementAmount)
+        {
             product.Stock += incrementAmount;
+        }
+
+        private void SaveProduct(Product product)
+        {
             _productRepository.Update(product);
         }
 
