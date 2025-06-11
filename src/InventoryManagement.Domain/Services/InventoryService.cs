@@ -1,5 +1,6 @@
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Models;
+using InventoryManagement.Domain.Exceptions;
 
 namespace InventoryManagement.Domain.Services
 {
@@ -14,14 +15,19 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            var product = GetProduct(productName);
+            var product = GetProduct(productName);        
             IncreaseStock(product, incrementAmount);
             SaveProduct(product);
         }
     
-        private Product GetProduct(string productName)
-        {
-            return _productRepository.GetByName(productName);
+        private Product GetProduct(string productName)        
+        {   
+            var product = _productRepository.GetByName(productName);
+            if (product == null)
+            {
+                throw new ProductNotFoundException($"Product '{productName}' not found.");
+            }
+            return product;
         }
 
         private void IncreaseStock(Product product, int incrementAmount)
