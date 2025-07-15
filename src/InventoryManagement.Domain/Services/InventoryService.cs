@@ -13,8 +13,11 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            //No existe implementación. Fase Roja
-            throw new System.NotImplementedException();
+            //Fase Verde
+            var product = _productRepository.FindByName(productName);
+            product.Stock += incrementAmount;
+            _productRepository.Update(product);
+
         }
     }
 }
