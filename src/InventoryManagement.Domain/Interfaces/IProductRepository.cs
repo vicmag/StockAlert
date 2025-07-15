@@ -4,7 +4,7 @@ namespace InventoryManagement.Domain.Interfaces
 {
     public interface IProductRepository
     {
-        Product GetByName(string productName);
+        Product FindByName(string productName);
         void Update(Product product);
     }
 }
