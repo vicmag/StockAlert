@@ -1,6 +1,7 @@
 using System;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Models;
+using InventoryManagement.Domain.Exceptions;
 
 namespace InventoryManagement.Domain.Services
 {
@@ -14,15 +15,26 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            //Fase Refactorización
-            var product = _productRepository.FindByName(productName);
+            //Nuevo ciclo RGR. Flujo de excepción
+            var product = GetProduct(productName);
             IncrementProductStock(product, incrementAmount);
-            _productRepository.Update(product);
+            UpdateProduct(product);
+        }
 
+        private Product GetProduct(string productName){
+            var product = _productRepository.FindByName(productName);
+            if (product == null){
+                throw new ProductNotFoundException("El producto no existe");
+            }
+            return product;
         }
 
         private void IncrementProductStock(Product product, int increment){
             product.Stock += increment;
+        }
+
+        private void UpdateProduct(Product product){
+            _productRepository.Update(product);
         }
     }
 }

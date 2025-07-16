@@ -1,14 +1,14 @@
 using InventoryManagement.Domain.Models;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Services;
+using InventoryManagement.Domain.Exceptions;
 using Xunit;
 using Moq;
 
 namespace InventoryManagement.Domain.Tests
 {
     public class InventoryServicesTests{
-        [Fact]
-        //NombreMetodo_Escenario_ResultadoEsperado
+        [Fact]        
         public void IncrementStock_CuandoIncrementoStock_EntoncesSeAlmacenaCorrectamente()
         {
             // Arrange (configuración)
@@ -39,5 +39,26 @@ namespace InventoryManagement.Domain.Tests
 
         }
 
+        [Fact]
+        public void IncrementStock_CuandoArticuloInexistente_EntoncesSeLanzaExcepcion()
+        {
+            // Arrange (configuración)
+            var productName = "ProductoInexistente";
+            var incrementAmount = 5;
+
+            var repositoryMock = new Mock<IProductRepository>();
+            var inventoryService = new InventoryService(repositoryMock.Object);
+
+            repositoryMock.Setup(repo => repo.FindByName(productName))
+                .Returns((Product)null);
+
+            // Act & Assert (ejecución & validación)
+            Assert.Throws<ProductNotFoundException>(() =>
+                inventoryService.IncrementStock(productName, incrementAmount));
+            repositoryMock.Verify(repo => repo.Update(It.IsAny<Product>()), Times.Never);
+        }
+
     }
+
+    
 }
