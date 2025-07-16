@@ -1,5 +1,6 @@
 using System;
 using InventoryManagement.Domain.Interfaces;
+using InventoryManagement.Domain.Models;
 
 namespace InventoryManagement.Domain.Services
 {
@@ -13,11 +14,15 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            //Fase Verde
+            //Fase Refactorización
             var product = _productRepository.FindByName(productName);
-            product.Stock += incrementAmount;
+            IncrementProductStock(product, incrementAmount);
             _productRepository.Update(product);
 
+        }
+
+        private void IncrementProductStock(Product product, int increment){
+            product.Stock += increment;
         }
     }
 }
