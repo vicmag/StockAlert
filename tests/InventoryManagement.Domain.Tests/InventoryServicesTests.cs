@@ -53,9 +53,48 @@ namespace InventoryManagement.Domain.Tests
                 .Returns((Product)null);
 
             // Act & Assert (ejecución & validación)
-            Assert.Throws<ProductNotFoundException>(() =>
+            var exception = Assert.Throws<ProductNotFoundException>(() =>
                 inventoryService.IncrementStock(productName, incrementAmount));
+            Assert.Equal("El producto no existe.", exception.Message);
             repositoryMock.Verify(repo => repo.Update(It.IsAny<Product>()), Times.Never);
+        }
+
+        [Fact]
+        public void IncrementStock_CuandoElIncrementoEsNegativo_EntoncesSeLanzaExcepcion()
+        {
+            // Arrange (configuración)
+            var productName = "Camiseta";
+            var incrementAmount = -5;
+
+            var repositoryMock = new Mock<IProductRepository>();
+            var inventoryService = new InventoryService(repositoryMock.Object);
+
+            // Act & Assert (ejecución & validación)
+            var exception = Assert.Throws<ArgumentException>(() =>
+                inventoryService.IncrementStock(productName, incrementAmount));
+            Assert.Equal("El incremento debe ser positivo.", exception.Message);
+            repositoryMock.Verify(repo => repo.FindByName(It.IsAny<string>()), Times.Never);
+            repositoryMock.Verify(repo => repo.Update(It.IsAny<Product>()), Times.Never);
+            
+        }
+
+        [Fact]
+        public void IncrementStock_CuandoElIncrementoEsCero_EntoncesSeLanzaExcepcion()
+        {
+            // Arrange (configuración)
+            var productName = "Camiseta";
+            var incrementAmount = 0;
+
+            var repositoryMock = new Mock<IProductRepository>();
+            var inventoryService = new InventoryService(repositoryMock.Object);
+
+            // Act & Assert (ejecución & validación)
+            var exception = Assert.Throws<ArgumentException>(() =>
+                inventoryService.IncrementStock(productName, incrementAmount));
+            Assert.Equal("El incremento debe ser positivo.", exception.Message);
+            repositoryMock.Verify(repo => repo.FindByName(It.IsAny<string>()), Times.Never);
+            repositoryMock.Verify(repo => repo.Update(It.IsAny<Product>()), Times.Never);
+            
         }
 
     }

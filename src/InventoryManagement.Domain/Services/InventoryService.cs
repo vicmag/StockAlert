@@ -15,7 +15,11 @@ namespace InventoryManagement.Domain.Services
 
         public void IncrementStock(string productName, int incrementAmount)
         {
-            //Nuevo ciclo RGR. Flujo de excepción
+            //Nuevo ciclo RGR. Pruebas de valores límite
+            if (incrementAmount<=0)
+            {
+                throw new ArgumentException("El incremento debe ser positivo.");
+            }
             var product = GetProduct(productName);
             IncrementProductStock(product, incrementAmount);
             UpdateProduct(product);
@@ -24,7 +28,7 @@ namespace InventoryManagement.Domain.Services
         private Product GetProduct(string productName){
             var product = _productRepository.FindByName(productName);
             if (product == null){
-                throw new ProductNotFoundException("El producto no existe");
+                throw new ProductNotFoundException("El producto no existe.");
             }
             return product;
         }
