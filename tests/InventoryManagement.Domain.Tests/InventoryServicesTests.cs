@@ -1,7 +1,6 @@
 using InventoryManagement.Domain.Models;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Services;
-using InventoryManagement.Domain.Exceptions;
 using Xunit;
 using Moq;
 
@@ -21,7 +20,7 @@ namespace InventoryManagement.Domain.Tests
             var productRepoMock = new Mock<IProductRepository>();
             var testProduct = new Product { Name = productName, Stock = initialStock };
 
-            productRepoMock.Setup(repo => repo.GetByName(productName))
+            productRepoMock.Setup(repo => repo.FindByName(productName))
                 .Returns(testProduct);
 
             var inventoryService = new InventoryService(productRepoMock.Object);
@@ -30,7 +29,7 @@ namespace InventoryManagement.Domain.Tests
             inventoryService.IncrementStock(productName, incrementAmount);
 
             // Assert (Validación)
-            productRepoMock.Verify(repo => repo.GetByName(productName), Times.Once);
+            productRepoMock.Verify(repo => repo.FindByName(productName), Times.Once);
             Assert.Equal(expectedStock, testProduct.Stock);
             productRepoMock.Verify(repo => repo.Update(testProduct), Times.Once);
 
@@ -45,7 +44,7 @@ namespace InventoryManagement.Domain.Tests
 
             var productRepoMock = new Mock<IProductRepository>();
 
-            productRepoMock.Setup(repo => repo.GetByName(productName))
+            productRepoMock.Setup(repo => repo.FindByName(productName))
                 .Returns((Product)null); //Simular que el producto no existe
 
             var inventoryService = new InventoryService(productRepoMock.Object);
