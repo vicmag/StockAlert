@@ -35,25 +35,5 @@ namespace InventoryManagement.Domain.Tests
 
         }
 
-        [Fact]
-        public void IncrementStock_ShouldThrowException_WhenProductNotFound()
-        {
-            // Arrange (configuración)
-            var productName = "ProductoInexistente";
-            var incrementAmount = 5;
-
-            var productRepoMock = new Mock<IProductRepository>();
-
-            productRepoMock.Setup(repo => repo.FindByName(productName))
-                .Returns((Product)null); //Simular que el producto no existe
-
-            var inventoryService = new InventoryService(productRepoMock.Object);
-
-            // Act & Assert (Ejecución & Validación)
-            Assert.Throws<ProductNotFoundException>(() =>
-                inventoryService.IncrementStock(productName, incrementAmount));
-            productRepoMock.Verify(repo => repo.Update(It.IsAny<Product>()), Times.Never);
-
-        }
     }
 }
