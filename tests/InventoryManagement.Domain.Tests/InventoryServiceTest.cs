@@ -4,6 +4,7 @@ using Xunit;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Models;
 using InventoryManagement.Domain.Services;
+using InventoryManagement.Domain.Exceptions;
 
 namespace InventoryManagement.Domain.Tests.Services
 {
@@ -44,5 +45,36 @@ namespace InventoryManagement.Domain.Tests.Services
                 p.Stock == (initialStock + incrementAmount))), Times.Once);
         }
         
+    
+
+        [Fact]
+        public async Task IncreaseStock_ShouldReturnError_WhenProductNotFound()
+        {
+            // Arrange
+            var productName = "ProductoInexistente";
+            var incrementAmount = 5;
+            
+            // Mock del repositorio que retorna null (producto no encontrado)
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.FindByName(productName))
+                .ReturnsAsync((Product)null); // Simula que no encuentra el producto
+                    
+            // El método Save nunca debería llamarse
+            mockRepo.Setup(repo => repo.Save(It.IsAny<Product>()))
+                .Verifiable(); // Para verificación posterior
+                
+            var service = new ProductService(mockRepo.Object);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ProductNotFoundException>(() =>
+                service.IncreaseStock(productName, incrementAmount));
+            
+            // Assert
+            Assert.Contains("no encontrado", exception.Message);
+            Assert.Contains(productName, exception.Message);
+            
+            // Verificar que Save nunca fue llamado
+            mockRepo.Verify(repo => repo.Save(It.IsAny<Product>()), Times.Never);
+        }
     }
 }

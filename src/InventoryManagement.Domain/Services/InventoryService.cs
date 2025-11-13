@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Models;
+using InventoryManagement.Domain.Exceptions;
 
 namespace InventoryManagement.Domain.Services
 {
@@ -15,29 +16,22 @@ namespace InventoryManagement.Domain.Services
 
         public async Task IncreaseStock(string productName, int amount)
         {
-            var product = await FindProductByNameAsync(productName);
+            // 1. Buscar el producto por nombre
+            var product = await _productRepository.FindByName(productName);
             
-            ApplyStockChange(product, amount);
+            // 2. Si el producto no existe, lanzar excepción
+            if (product == null)
+            {
+                throw new ProductNotFoundException($"Producto '{productName}' no encontrado");
+            }
             
-            await PersistChangesAsync(product);
-        }
-
-        // findProductByName busca un producto por nombre en el repositorio
-        private async Task<Product> FindProductByNameAsync(string name)
-        {
-            return await _productRepository.FindByName(name);
-        }
-
-        // applyStockChange aplica el incremento al stock del producto
-        private void ApplyStockChange(Product product, int amount)
-        {
+            // 3. Solo incrementar y guardar si el producto existe
             product.Stock += amount;
-        }
-
-        // persistChanges guarda los cambios en el repositorio
-        private async Task PersistChangesAsync(Product product)
-        {
+            
+            // 4. Guardar los cambios
             await _productRepository.Save(product);
         }
+
+        
     }
 }
