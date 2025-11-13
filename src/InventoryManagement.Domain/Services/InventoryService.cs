@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Models;
@@ -16,13 +15,28 @@ namespace InventoryManagement.Domain.Services
 
         public async Task IncreaseStock(string productName, int amount)
         {
-            // 1. Buscar el producto por nombre
-            var product = await _productRepository.FindByName(productName);
+            var product = await FindProductByNameAsync(productName);
             
-            // 2. Incrementar el stock con la cantidad especificada
+            ApplyStockChange(product, amount);
+            
+            await PersistChangesAsync(product);
+        }
+
+        // findProductByName busca un producto por nombre en el repositorio
+        private async Task<Product> FindProductByNameAsync(string name)
+        {
+            return await _productRepository.FindByName(name);
+        }
+
+        // applyStockChange aplica el incremento al stock del producto
+        private void ApplyStockChange(Product product, int amount)
+        {
             product.Stock += amount;
-            
-            // 3. Guardar los cambios
+        }
+
+        // persistChanges guarda los cambios en el repositorio
+        private async Task PersistChangesAsync(Product product)
+        {
             await _productRepository.Save(product);
         }
     }
