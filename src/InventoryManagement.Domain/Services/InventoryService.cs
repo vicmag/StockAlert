@@ -1,40 +1,23 @@
+using System;
+using System.Threading.Tasks;
 using InventoryManagement.Domain.Interfaces;
 using InventoryManagement.Domain.Models;
-using InventoryManagement.Domain.Exceptions;
 
 namespace InventoryManagement.Domain.Services
 {
-    public class InventoryService
+    public class ProductService
     {
         private readonly IProductRepository _productRepository;
 
-        public InventoryService(IProductRepository productRepository)
+        public ProductService(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
 
-        public void IncrementStock(string productName, int incrementAmount)
+        public async Task IncreaseStock(string productName, int amount)
         {
-            var product = GetProduct(productName);
-            product.Stock += incrementAmount;
-            SaveProduct(product);
+            // Implementación vacía para fase roja
+            throw new NotImplementedException();
         }
-
-        private Product GetProduct(string productName)
-        {   
-            var product = _productRepository.FindByName(productName);
-            if (product == null) {
-                throw new ProductNotFoundException($"Producto no encontrado: {productName}.");
-            }
-            return product;
-        }
-
-        private void SaveProduct(Product product)
-        {
-            _productRepository.Update(product);
-        }
-        
-
-
     }
 }

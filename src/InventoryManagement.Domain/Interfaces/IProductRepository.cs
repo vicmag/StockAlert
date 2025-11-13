@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using InventoryManagement.Domain.Models;
 
 namespace InventoryManagement.Domain.Interfaces
 {
     public interface IProductRepository
     {
-        Product FindByName(string productName);
-        void Update(Product product);
+        Task<Product> FindByName(string name);
+        Task Save(Product product);
     }
 }

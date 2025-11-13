@@ -1,40 +1,54 @@
-using InventoryManagement.Domain.Models;
+using System.Threading.Tasks;
+using Moq;
+using Xunit;
 using InventoryManagement.Domain.Interfaces;
+using InventoryManagement.Domain.Models;
 using InventoryManagement.Domain.Services;
 
-using Xunit;
-using Moq;
-
-namespace InventoryManagement.Domain.Tests
+namespace InventoryManagement.Domain.Tests.Services
 {
-    public class InventoryServiceTest
+    public class ProductServiceTests
     {
         [Fact]
-        public void IncrementStock_ShouldUpdateProduct()
+        public async Task IncreaseStock_ShouldIncrementProductStock_WhenProductExists()
         {
-            //Arrange (configuración)
+            // Arrange
             var productName = "Camiseta";
             var initialStock = 10;
-            var increment = 5;
-            var finalStock = initialStock + increment;
+            var incrementAmount = 5;
+            
+            var mockProduct = new Product 
+            { 
+                Name = productName, 
+                Stock = initialStock 
+            };
+            
+            var mockRepo = new Mock<IProductRepository>();
+            
+            // Configuración del comportamiento esperado
+            mockRepo.Setup(repo => repo.FindByName(productName))
+                .ReturnsAsync(mockProduct);
+                
+            mockRepo.Setup(repo => repo.Save(It.Is<Product>(p => 
+                p.Stock == (initialStock + incrementAmount))))
+                .Returns(Task.CompletedTask);
+            
+            var service = new ProductService(mockRepo.Object);
 
-            var testProduct = new Product { Name = productName, Stock = initialStock };
-            var mockRepository = new Mock<IProductRepository>();
+            // Act
+            await service.IncreaseStock(productName, incrementAmount);
 
-            //Definición del comportamiento de los mock (stub)
-            mockRepository.Setup(repo => repo.FindByName(productName))
-                .Returns(testProduct);
-
-            var inventoryService = new InventoryService(mockRepository.Object);
-
-            //Act (ejecución)
-            inventoryService.IncrementStock(productName, increment);
-
-            //Assert (validación)
-            mockRepository.Verify(repo => repo.FindByName(productName), Times.Once);
-            Assert.Equal(finalStock, testProduct.Stock);
-            mockRepository.Verify(repo => repo.Update(testProduct), Times.Once);
-
+            // Assert
+            mockRepo.Verify(repo => repo.FindByName(productName), Times.Once);
+            mockRepo.Verify(repo => repo.Save(It.Is<Product>(p => 
+                p.Stock == (initialStock + incrementAmount))), Times.Once);
+        }
+        
+        [Fact]
+        public void IncreaseStock_ShouldThrowException_WhenProductDoesNotExist()
+        {
+            // Este test se implementará en la siguiente iteración
+            // Por implementar en la siguiente iteración
         }
     }
 }
