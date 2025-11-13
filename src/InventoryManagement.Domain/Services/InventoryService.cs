@@ -16,8 +16,14 @@ namespace InventoryManagement.Domain.Services
 
         public async Task IncreaseStock(string productName, int amount)
         {
-            // Implementación vacía para fase roja
-            throw new NotImplementedException();
+            // 1. Buscar el producto por nombre
+            var product = await _productRepository.FindByName(productName);
+            
+            // 2. Incrementar el stock con la cantidad especificada
+            product.Stock += amount;
+            
+            // 3. Guardar los cambios
+            await _productRepository.Save(product);
         }
     }
 }

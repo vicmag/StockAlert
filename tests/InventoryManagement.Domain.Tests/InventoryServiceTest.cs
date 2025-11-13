@@ -44,11 +44,5 @@ namespace InventoryManagement.Domain.Tests.Services
                 p.Stock == (initialStock + incrementAmount))), Times.Once);
         }
         
-        [Fact]
-        public void IncreaseStock_ShouldThrowException_WhenProductDoesNotExist()
-        {
-            // Este test se implementará en la siguiente iteración
-            // Por implementar en la siguiente iteración
-        }
     }
 }
